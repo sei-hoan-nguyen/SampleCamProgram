@@ -69,7 +69,7 @@ CASE nState OF
 		END_IF
 	25:	// Speed up Master after all CAMs done coupling 
 		IF NOT bMasterRun THEN
-			GVL.rMasterVel	:= 180;
+			GVL.rMasterVel	:= 50;
 			bMasterRun		:= TRUE;
 			nState			:= 26;
 		END_IF

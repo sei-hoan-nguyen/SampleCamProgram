@@ -1,12 +1,12 @@
 <Node>
-  <Title>CamScope2</Title>
+  <Title>CamScope</Title>
   <Expanded>False</Expanded>
   <FileName></FileName>
   <Children>
     <Node>
       <Title>ScopeWizard</Title>
       <Expanded>True</Expanded>
-      <FileName>C:\Users\Hnguyen\Documents\TcXaeShell\SiteController\CamScope2\ScopeWizard.tcscopex</FileName>
+      <FileName>C:\Users\Hnguyen\Documents\TcXaeShell\SiteController\CamScope\ScopeWizard.tcscopex</FileName>
       <Children>
         <Node>
           <Title>DataPool</Title>
@@ -14,31 +14,55 @@
           <FileName></FileName>
           <Children>
             <Node>
-              <Title>SetPos</Title>
+              <Title>ActAcc</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
             </Node>
             <Node>
-              <Title>SetPos (1)</Title>
+              <Title>ActAcc (1)</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
             </Node>
             <Node>
-              <Title>SetPos (2)</Title>
+              <Title>ActAcc (2)</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
             </Node>
             <Node>
-              <Title>SetPos (3)</Title>
+              <Title>ActAcc (3)</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
             </Node>
             <Node>
-              <Title>SetPos (4)</Title>
+              <Title>ActPos</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
+              <Title>ActPos (1)</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
+              <Title>ActPos (2)</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
+              <Title>ActPos (3)</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
+            <Node>
+              <Title>ActPos (4)</Title>
               <Expanded>False</Expanded>
               <FileName></FileName>
               <Children />
@@ -51,12 +75,12 @@
           <FileName></FileName>
           <Children>
             <Node>
-              <Title>Axis Group</Title>
+              <Title>Master</Title>
               <Expanded>True</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
-                  <Title>Master</Title>
+                  <Title>ActPos</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
@@ -64,30 +88,30 @@
               </Children>
             </Node>
             <Node>
-              <Title>Axis Group (1)</Title>
+              <Title>Slaves</Title>
               <Expanded>True</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
-                  <Title>Slave_1</Title>
+                  <Title>Slave 1</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
                 </Node>
                 <Node>
-                  <Title>Slave_2</Title>
+                  <Title>Slave 2</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
                 </Node>
                 <Node>
-                  <Title>Slave_3</Title>
+                  <Title>Slave 3</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
                 </Node>
                 <Node>
-                  <Title>Slave_4</Title>
+                  <Title>Slave 4</Title>
                   <Expanded>False</Expanded>
                   <FileName></FileName>
                   <Children />
