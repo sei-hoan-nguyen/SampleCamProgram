@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_CamProfiles" Id="{bed509b4-f61f-417b-8036-d140481d4bee}" SpecialFunc="None">
+    <Declaration><![CDATA[(* This whole function block is to load cam profiles from a csv file
+ * onto the PLC program. This is only temporarily needed to test/learn the cam library.
+ * This will not be used when developing the machine, since the cam profiles will be loaded
+ * from recipe management.
+ *)
+
+FUNCTION_BLOCK FB_CamProfiles
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	sFilePath		: STRING;
+	
+	bReadDone		: BOOL;
+	bCreateDone		: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="mCreateCamProfiles" Id="{2a61a984-6c84-4e75-81a4-8abf3fc2e1ec}">
+      <Declaration><![CDATA[METHOD mCreateCamProfiles : BOOL
+VAR_INPUT
+	Execute			: BOOL;
+END_VAR
+VAR_IN_OUT
+	ALL_CAM			: ARRAY [1..4] OF ARRAY [0..359] OF ARRAY [0..1] OF LREAL;
+	ALL_CAM_REF		: ARRAY [1..4] OF MC_CAM_REF;
+END_VAR
+
+VAR_INST
+	nState			: INT;
+	rtStart			: R_TRIG;
+	
+	nIndex			: INT;
+	CamTableSelect	: MC_CamTableSelect;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			bCreateDone	:= FALSE;
+			nState		:= 5;
+		END_IF
+	5:
+		FOR nIndex := 1 TO 4 DO
+			ALL_CAM_REF[nIndex].pArray		:= ADR(ALL_CAM[nIndex]);
+			ALL_CAM_REF[nIndex].ArraySize	:= SIZEOF(ALL_CAM[nIndex]);
+			ALL_CAM_REF[nIndex].TableType	:= MC_TABLETYPE_EQUIDISTANT;
+			ALL_CAM_REF[nIndex].NoOfRows	:= 360;
+			ALL_CAM_REF[nIndex].NoOfColumns	:= 2;
+		END_FOR
+		nIndex 			:= 1;
+		nState			:= 10;
+	10:
+		CamTableSelect(
+			Execute		:= TRUE,
+			Periodic	:= FALSE,
+			CamTableID	:= nIndex,
+			CamTable	:= ALL_CAM_REF[nIndex]);
+		IF CamTableSelect.Error THEN 
+			nState		:= 255;
+		ELSIF CamTableSelect.Done AND nIndex < 4 THEN
+			CamTableSelect(Execute:=FALSE, CamTable	:= ALL_CAM_REF[nIndex]);
+			nIndex		:= nIndex + 1;
+		ELSIF CamTableSelect.Done THEN
+			CamTableSelect(Execute:=FALSE, CamTable	:= ALL_CAM_REF[nIndex]);
+			nState		:= 15;
+		END_IF
+	15:
+		bCreateDone		:= TRUE;
+		nState			:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mReadAndStoreSlavePositions" Id="{eeef5389-b72d-4ad4-b3db-88221ce8420d}">
+      <Declaration><![CDATA[METHOD mReadAndStoreSlavePositions : BOOL
+VAR_INPUT
+	Execute			: BOOL;
+END_VAR
+
+VAR_IN_OUT
+	ALL_CAM			: ARRAY [1..4] OF ARRAY [0..359] OF ARRAY [0..1] OF LREAL;
+END_VAR
+
+VAR_INST
+	nState			: INT;
+	rtStart			: R_TRIG;
+	fbFileOpen		: FB_FileOpen;
+	fbFileClose		: FB_FileClose;
+	fbFileGets		: FB_FileGets;	// Read 1 csv line function block.
+	fileHandle		: UINT;
+	
+	sReadLine		: STRING;
+	
+	aPositionStr	: ARRAY [0..360] OF STRING;
+	nIndex			: INT;
+	nCamFileNumber	: INT := 1;
+	lrAbsPosition	: LREAL;
+	aTemp			: ARRAY [0..1] OF LREAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:	// IDLE
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			bReadDone	:= FALSE;
+			sReadLine	:= '';
+			nIndex		:= 0;
+			nState		:= 5;
+		END_IF
+	5:	// Set file path base Cam profile
+		sFilePath		:= 'C:\Users\Administrator\Desktop\Cam_Profiles\8605-005 V2\Slave_';// Path: 	.\
+		sFilePath		:= CONCAT(sFilePath, INT_TO_STRING(nCamFileNumber));				//			.\Slave_#
+		sFilePath		:= CONCAT(sFilePath, '.csv');										//			.\Slave_#.csv
+		nState			:= 10;
+	10:	// Open the correspondence CSV file
+		fbFileOpen(
+			sNetId		:= '10.75.0.183.1.1',
+			sPathName	:= sFilePath,
+			nMode		:= FOPEN_MODEREAD,
+			ePath		:= PATH_GENERIC,
+			bExecute	:= TRUE,
+			tTimeout	:= DEFAULT_ADS_TIMEOUT);
+		nState			:= 15;
+	15:	// File open helper state
+		fbFileOpen(	bExecute := FALSE, hFile => fileHandle);
+		IF NOT fbFileOpen.bBusy AND NOT fbFileOpen.bError THEN
+			nState		:= 20;
+		ELSIF fbFileOpen.bError THEN
+			nState		:= 255;
+		END_IF
+	20:	// Read 1 line from the openned file, store the line to sReadLine
+		fbFileGets(
+			sNetId		:= '10.75.0.183.1.1',
+			hFile		:= fileHandle,
+			bExecute	:= TRUE,
+			sLine		=> sReadLine);
+		IF NOT fbFileGets.bBusy AND NOT fbFileGets.bError THEN
+			// Reset fbFileGets execute flag => remove the read line from memory buffer, so when fbFileGets is called again, the next line is read.
+			fbFileGets(bExecute:=FALSE);
+			// If not End_Of_File, then append the value to the Position Array and increment the index.
+			IF NOT fbFileGets.bEOF THEN
+				aPositionStr[nIndex]:= sReadLine;
+				nIndex	:= nIndex + 1;
+			ELSE
+				nIndex	:= 0;
+				nState	:= 25;
+			END_IF
+		ELSIF fbFileGets.bError THEN
+				nState	:= 255;
+		END_IF
+	25:	// 
+		FOR nIndex := 0 TO 359 DO
+			lrAbsPosition:= STRING_TO_LREAL(aPositionStr[nIndex]);
+			aTemp[0]	:= nIndex;
+			aTemp[1]	:= lrAbsPosition;
+			ALL_CAM[nCamFileNumber][nIndex]:= aTemp;
+		END_FOR
+		nState			:= 30;
+	30:
+		nIndex 			:= 0;
+		fbFileClose(
+			sNetId		:= '10.75.0.183.1.1',
+			hFile		:= fileHandle,
+			bExecute	:= TRUE);
+		nState			:= 35;
+	35:
+		fbFileClose(bExecute:=FALSE);
+		IF NOT fbFileClose.bBusy THEN
+			IF NOT fbFileClose.bError THEN
+				nState	:= 40;
+			ELSE
+				nState	:= 255;
+			END_IF
+		END_IF
+	40:
+		IF nCamFileNumber < 4 THEN
+			nCamFileNumber:= nCamFileNumber + 1;
+			nState		:= 5;
+		ELSE
+			bReadDone	:= TRUE;
+			nState		:= 0;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="pCreateDone" Id="{5dd09ab0-d193-419d-b396-a1a5cc65b2fd}">
+      <Declaration><![CDATA[PROPERTY pCreateDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{21041253-016f-4a13-a545-7be87e7f1e9c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[pCreateDone := bCreateDone;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="pReadDone" Id="{cd232594-def7-48c2-a74f-2f752c55ce5c}">
+      <Declaration><![CDATA[PROPERTY pReadDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{57296c4b-f6e7-4a4d-9bf5-c6edfaf32da7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[pReadDone := bReadDone;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FB_CamProfiles">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_CamProfiles.mCreateCamProfiles">
+      <LineId Id="5" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="20" Count="2" />
+      <LineId Id="24" Count="5" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="34" Count="11" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_CamProfiles.mReadAndStoreSlavePositions">
+      <LineId Id="15" Count="1" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="18" Count="3" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="101" Count="2" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="22" Count="10" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="37" Count="3" />
+      <LineId Id="42" Count="6" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="51" Count="7" />
+      <LineId Id="63" Count="7" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="73" Count="13" />
+      <LineId Id="112" Count="2" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_CamProfiles.pCreateDone.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_CamProfiles.pReadDone.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6fee57f4-0789-4033-b5d1-8eb8c868d6ce}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>true</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>Controller</Name>
+    <ProgramVersion>3.1.4026.15</ProgramVersion>
+    <Application>{f21e11d2-0d0a-4a65-91d7-de331e8877f8}</Application>
+    <TypeSystem>{57191326-4a83-4ec9-802d-714d270c5f8a}</TypeSystem>
+    <Implicit_Task_Info>{10bca9c0-d33c-45e9-ab47-9b293bdee76b}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{68a78684-1399-44d5-b656-c3c70ee474c5}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{8d517a63-81da-4aaf-827c-e0fe8055f4d5}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{34d3b234-afaa-47ac-9043-157c7783de4b}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DUTs\ST_RECIPE_VARIABLES.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\ST_WORKER_VARIABLES.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\GVL.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\FB_CamProfiles.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\FB_MasterCamControl.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DUTs" />
+    <Folder Include="GVLs" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_Math">
+      <DefaultResolution>Tc2_Math, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Math</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_MC2_Camming">
+      <DefaultResolution>Tc2_MC2_Camming, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2_Camming</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Controller.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" />
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

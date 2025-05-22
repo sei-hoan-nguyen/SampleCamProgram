@@ -1,0 +1,90 @@
+{
+    "recipeList": {
+        "001": {
+            "recipeTypeName": "JobAssignment",
+            "values": {
+                "Controller.MAIN.stRecipe.bCheckBool": false,
+                "Controller.MAIN.stRecipe.lrTestLReal": 43.2145436357,
+                "Controller.MAIN.stRecipe.nTestInt": 1,
+                "Controller.MAIN.stRecipe.rTestReal": 1.2,
+                "Controller.MAIN.stRecipe.sRecipeName": "001",
+                "Controller.MAIN.stRecipe.udnAnotherInt": 11
+            }
+        },
+        "002": {
+            "recipeTypeName": "JobAssignment",
+            "values": {
+                "Controller.MAIN.stRecipe.bCheckBool": true,
+                "Controller.MAIN.stRecipe.lrTestLReal": 354.153468547354,
+                "Controller.MAIN.stRecipe.nTestInt": 0,
+                "Controller.MAIN.stRecipe.rTestReal": 2.3,
+                "Controller.MAIN.stRecipe.sRecipeName": "002",
+                "Controller.MAIN.stRecipe.udnAnotherInt": 22
+            }
+        }
+    },
+    "recipeTypeList": {
+        "JobAssignment": {
+            "members": {
+                "Controller.MAIN.stRecipe.bCheckBool": {
+                    "defaultValue": false,
+                    "enabled": true,
+                    "group": "",
+                    "order": 0,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.bCheckBool",
+                    "unit": ""
+                },
+                "Controller.MAIN.stRecipe.lrTestLReal": {
+                    "defaultValue": 0.0,
+                    "enabled": true,
+                    "group": "",
+                    "order": 1,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.lrTestLReal",
+                    "unit": ""
+                },
+                "Controller.MAIN.stRecipe.nTestInt": {
+                    "defaultValue": 0,
+                    "enabled": true,
+                    "group": "",
+                    "order": 2,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.nTestInt",
+                    "unit": ""
+                },
+                "Controller.MAIN.stRecipe.rTestReal": {
+                    "defaultValue": 0.0,
+                    "enabled": true,
+                    "group": "",
+                    "order": 3,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.rTestReal",
+                    "unit": ""
+                },
+                "Controller.MAIN.stRecipe.sRecipeName": {
+                    "defaultValue": "000",
+                    "enabled": true,
+                    "group": "",
+                    "order": 5,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.sRecipeName",
+                    "unit": ""
+                },
+                "Controller.MAIN.stRecipe.udnAnotherInt": {
+                    "defaultValue": 0,
+                    "enabled": true,
+                    "group": "",
+                    "order": 4,
+                    "schema": {},
+                    "symbol": "Controller.MAIN.stRecipe.udnAnotherInt",
+                    "unit": ""
+                }
+            },
+            "options": {
+                "enabled": "None"
+            },
+            "recipeTypeNames": []
+        }
+    }
+}

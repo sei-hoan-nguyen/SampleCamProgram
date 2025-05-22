@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <DUT Name="ST_WORKER_VARIABLES" Id="{73bc7c24-8315-4fab-871b-88a971f17cac}">
+    <Declaration><![CDATA[TYPE ST_WORKER_VARIABLES :
+STRUCT
+	sMachineName		: STRING := 'Worker_1';
+	sProgramVersion		: STRING := '1.0';
+	stRecipeVariables	: ST_RECIPE_VARIABLES;
+	
+	eStatus				: (IDLE,
+							ASSIGNED,
+							RUNNING,
+							MAINTAINANCE_REQ);
+	
+	bGetRecipeAndCams	: BOOL;
+	bCamsReady			: BOOL;
+	sAssignedRecipe		: STRING;
+	udnNumberOfJobsDone	: UDINT;
+	udnDaysSinceServiced: UDINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

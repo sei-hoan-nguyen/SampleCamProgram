@@ -1,0 +1,723 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="FB_MasterCamControl" Id="{563d04a1-1878-491b-b5bf-d0acddfa2dc7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MasterCamControl
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+//	fbMaster		: CAM_AXIS_BASE;
+//	fbSlave_1		: CAM_AXIS_BASE;
+//	fbSlave_2		: CAM_AXIS_BASE;
+//	fbSlave_3		: CAM_AXIS_BASE;
+//	fbSlave_4		: CAM_AXIS_BASE;
+	mcHome			: MC_Home;
+	bRunCams		: BOOL;
+	
+	bInitialized	: BOOL;
+	bCamInDone		: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//fbMaster.mRunCam(bRunCams);
+//fbSlave_1.mRunCam(bRunCams);
+//fbSlave_2.mRunCam(bRunCams);
+//fbSlave_3.mRunCam(bRunCams);
+//fbSlave_4.mRunCam(bRunCams);
+
+// Reset Virtual Master Cam to 0 after 1 complete revolution
+IF GVL.Master.NcToPlc.ModuloSetTurns = 1 AND NOT mcHome.Done THEN
+	mcHome(
+		Axis		:= GVL.Master,
+		Execute		:= TRUE,
+		Position	:= 0,
+		HomingMode	:= MC_Direct);
+ELSIF mcHome.Done THEN
+	mcHome(Axis := GVL.Master, Execute := FALSE);
+END_IF]]></ST>
+    </Implementation>
+    <Method Name="mCamOut" Id="{fec35e8c-ce4a-4b90-be2e-5dd8bb43044e}">
+      <Declaration><![CDATA[METHOD mCamOut : BOOL
+VAR_INPUT
+	Execute		: BOOL;
+END_VAR
+
+VAR_INST
+	CamOut		: MC_CamOut;
+	
+	nState		: INT;
+	rtStart		: R_TRIG;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			mCamOut		:= FALSE;
+			nState		:= 5;
+		END_IF
+	5:
+		CamOut(Slave := GVL.Slave_1, Execute := TRUE);
+		IF CamOut.Done THEN
+			CamOut(Slave := GVL.Slave_1, Execute := FALSE);
+			nState		:= 15;
+		END_IF
+	15:
+		CamOut(Slave := GVL.Slave_2, Execute := TRUE);
+		IF CamOut.Done THEN
+			CamOut(Slave := GVL.Slave_2, Execute := FALSE);
+			nState		:= 20;
+		END_IF
+	20:
+		CamOut(Slave := GVL.Slave_3, Execute := TRUE);
+		IF CamOut.Done THEN
+			CamOut(Slave := GVL.Slave_3, Execute := FALSE);
+			nState		:= 25;
+		END_IF
+	25:
+		CamOut(Slave := GVL.Slave_4, Execute := TRUE);
+		IF CamOut.Done THEN
+			CamOut(Slave := GVL.Slave_4, Execute := FALSE);
+			nState		:= 30;
+		END_IF
+	30:
+		mCamOut			:= TRUE;
+		nState			:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mHalt" Id="{a03e96ed-f4ca-4d55-a866-0c612669a200}">
+      <Declaration><![CDATA[METHOD mHalt : BOOL
+VAR_IN_OUT
+	Execute		: BOOL;
+END_VAR
+VAR_INST
+	HaltMaster	: MC_Halt;
+	HaltSlave_1	: MC_Halt;
+	HaltSlave_2	: MC_Halt;
+	HaltSlave_3	: MC_Halt;
+	HaltSlave_4	: MC_Halt;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[HaltMaster(Axis := GVL.Master, Execute := Execute);
+HaltSlave_1(Axis := GVL.Slave_1, Execute := Execute);
+HaltSlave_2(Axis := GVL.Slave_2, Execute := Execute);
+HaltSlave_3(Axis := GVL.Slave_3, Execute := Execute);
+HaltSlave_4(Axis := GVL.Slave_4, Execute := Execute);
+
+IF HaltMaster.Done AND HaltSlave_1.Done AND HaltSlave_2.Done AND HaltSlave_3.Done AND HaltSlave_4.Done THEN
+	Execute := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mHomeAxes" Id="{3dafe4fd-36db-4d2b-a1a0-e571e50f84c5}">
+      <Declaration><![CDATA[(* Move all axes to 0 position *)
+METHOD mHomeAxes : BOOL
+VAR_INPUT
+	Execute			: BOOL;
+END_VAR
+
+VAR_INST
+	MoveHome		: MC_MoveAbsolute;
+	mcHome			: MC_Home;
+	
+	nState			: INT;
+	rtStart			: R_TRIG;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			mHomeAxes	:= FALSE;
+			nState		:= 5;
+		END_IF
+	5:
+		MoveHome(
+			Axis		:= GVL.Slave_1,
+			Execute		:= TRUE,
+			Position	:= 0,
+			Velocity	:= 2000);
+		IF MoveHome.Done THEN
+			MoveHome(Axis := GVL.Slave_1, Execute := FALSE);
+			nState		:= 10;
+		END_IF
+	10:
+		MoveHome(
+			Axis		:= GVL.Slave_2,
+			Execute		:= TRUE,
+			Position	:= 0,
+			Velocity	:= 2000);
+		IF MoveHome.Done THEN
+			MoveHome(Axis := GVL.Slave_2, Execute := FALSE);
+			nState		:= 15;
+		END_IF
+	15:
+		MoveHome(
+			Axis		:= GVL.Slave_3,
+			Execute		:= TRUE,
+			Position	:= 0,
+			Velocity	:= 2000);
+		IF MoveHome.Done THEN
+			MoveHome(Axis := GVL.Slave_3, Execute := FALSE);
+			nState		:= 20;
+		END_IF
+	20:
+		MoveHome(
+			Axis		:= GVL.Slave_4,
+			Execute		:= TRUE,
+			Position	:= 0,
+			Velocity	:= 2000);
+		IF MoveHome.Done THEN
+			MoveHome(Axis := GVL.Slave_4, Execute := FALSE);
+			nState		:= 25;
+		END_IF
+	25:
+		mcHome(
+			Axis		:= GVL.Master,
+			Execute		:= TRUE,
+			Position	:= 0,
+			HomingMode	:= MC_Direct);
+		IF mcHome.Done THEN
+			mcHome(Axis := GVL.Master, Execute := FALSE);
+			nState		:= 30;
+		END_IF
+	30:
+		mHomeAxes		:= TRUE;
+		nState			:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mInitialize" Id="{9573a738-c4c6-41ee-bdc4-c7aa6dc47070}">
+      <Declaration><![CDATA[METHOD mInitialize : BOOL
+VAR_INPUT
+	Execute			: BOOL;
+END_VAR
+VAR_INST
+	nState			: INT;
+	rtStart			: R_TRIG;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			bInitialized	:= FALSE;
+			nState			:= 1;
+		END_IF
+	1:
+		IF mCamOut(TRUE) THEN
+			mCamOut(FALSE);
+			nState			:= 5;
+		END_IF
+	5:
+		IF mReset(TRUE) THEN
+			mReset(FALSE);
+			nState			:= 10;
+		END_IF
+	10:
+		IF mPower(TRUE) THEN
+			mPower(FALSE);
+			nState			:= 15;
+		END_IF
+	15:
+		IF mHomeAxes(TRUE) THEN
+			mHomeAxes(FALSE);
+			nState			:= 100;
+		END_IF
+	100:
+		bInitialized		:= TRUE;
+		nState				:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mMultiCamIn" Id="{ae1371a6-3971-4de4-9f5e-3ff07e00bbd9}">
+      <Declaration><![CDATA[METHOD mMultiCamIn : BOOL
+VAR_INPUT
+	Execute		: BOOL;
+END_VAR
+
+VAR_INST
+	nState		: INT;
+	rtStart		: R_TRIG;
+	
+	CamIn		: MC_CamIn;
+	
+	Options		: ST_CamInOptions;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			Options.ActivationMode:= MC_CAMACTIVATION_INSTANTANEOUS;
+			Options.InterpolationType:= MC_INTERPOLATIONTYPE_LINEAR;
+			bCamInDone	:= FALSE;
+			nState		:= 5;
+		END_IF
+	5:
+		CamIn(
+			Master		:= GVL.Master,
+			Slave		:= GVL.Slave_1,
+			Execute		:= TRUE,
+ 			StartMode	:= MC_STARTMODE_ABSOLUTE,
+			Options		:= Options,
+			CamTableID	:= 1);
+		IF CamIn.InSync THEN
+			CamIN(Master:= GVL.Master, Slave:= GVL.Slave_1, Execute:= FALSE);
+			nState		:= 10;
+		END_IF
+	10:
+		CamIn(
+			Master		:= GVL.Master,
+			Slave		:= GVL.Slave_2,
+			Execute		:= TRUE,
+			StartMode	:= MC_STARTMODE_ABSOLUTE,
+			Options		:= Options,
+			CamTableID	:= 2);
+		IF CamIn.InSync THEN
+			CamIN(Master:= GVL.Master, Slave:= GVL.Slave_2, Execute:= FALSE);
+			nState		:= 15;
+		END_IF
+	15:
+		CamIn(
+			Master		:= GVL.Master,
+			Slave		:= GVL.Slave_3,
+			Execute		:= TRUE,
+			StartMode	:= MC_STARTMODE_ABSOLUTE,
+			Options		:= Options,
+			CamTableID	:= 3);
+		IF CamIn.InSync THEN
+			CamIN(Master:= GVL.Master, Slave:= GVL.Slave_3, Execute:= FALSE);
+			nState		:= 20;
+		END_IF
+	20:
+		CamIn(
+			Master		:= GVL.Master,
+			Slave		:= GVL.Slave_4,
+			Execute		:= TRUE,
+			StartMode	:= MC_STARTMODE_ABSOLUTE,
+			Options		:= Options,
+			CamTableID	:= 4);
+		IF CamIn.InSync THEN
+			CamIN(Master:= GVL.Master, Slave:= GVL.Slave_4, Execute:= FALSE);
+			nState		:= 25;
+		END_IF
+	25:
+		bCamInDone		:= TRUE;
+		nState			:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mPower" Id="{df25cbad-15f3-45a6-8254-8d21a94a4d9a}">
+      <Declaration><![CDATA[METHOD mPower : BOOL
+VAR_INPUT
+	Execute			: BOOL;
+END_VAR
+VAR_INST
+	nState			: INT;
+	rtStart			: R_TRIG;
+	
+	PowerMaster				: MC_Power;
+	PowerSlave_1			: MC_Power;
+	PowerSlave_2			: MC_Power;
+	PowerSlave_3			: MC_Power;
+	PowerSlave_4			: MC_Power;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			mPower			:= FALSE;
+			nState			:= 5;
+		END_IF
+	5:
+		PowerMaster(
+			Axis			:= GVL.Master,
+			Enable			:= TRUE,
+			Enable_Positive	:= TRUE,
+			Enable_Negative	:= TRUE);
+		IF PowerMaster.Status THEN			// Status = Done (BOOL)
+			nState			:= 10;
+		END_IF
+	10:
+		PowerSlave_1(
+			Axis			:= GVL.Slave_1,
+			Enable			:= TRUE,
+			Enable_Positive	:= TRUE,
+			Enable_Negative	:= TRUE);
+		IF PowerSlave_1.Status THEN
+			nState			:= 15;
+		END_IF
+	15:
+		PowerSlave_2(
+			Axis			:= GVL.Slave_2,
+			Enable			:= TRUE,
+			Enable_Positive	:= TRUE,
+			Enable_Negative	:= TRUE);
+		IF PowerSlave_2.Status THEN
+			nState			:= 20;
+		END_IF
+	20:
+		PowerSlave_3(
+			Axis			:= GVL.Slave_3,
+			Enable			:= TRUE,
+			Enable_Positive	:= TRUE,
+			Enable_Negative	:= TRUE);
+		IF PowerSlave_3.Status THEN
+			nState			:= 25;
+		END_IF
+	25:
+		PowerSlave_4(
+			Axis			:= GVL.Slave_4,
+			Enable			:= TRUE,
+			Enable_Positive	:= TRUE,
+			Enable_Negative	:= TRUE);
+		IF PowerSlave_4.Status THEN
+			nState			:= 100;
+		END_IF
+	100:
+		mPower				:= TRUE;
+		nState				:= 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mReset" Id="{4f7ff489-d1c4-45ad-91f1-fdfcac150328}">
+      <Declaration><![CDATA[METHOD mReset : BOOL
+VAR_INPUT
+	Execute		: BOOL;
+END_VAR
+VAR_INST
+//	ResetMaster	: MC_Reset;
+//	ResetSlave_1: MC_Reset;
+//	ResetSlave_2: MC_Reset;
+//	ResetSlave_3: MC_Reset;
+//	ResetSlave_4: MC_Reset;
+	Reset		: MC_Reset;	
+
+	nState		: INT;
+	rtStart		: R_TRIG;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE nState OF
+	0:
+		rtStart(CLK := Execute);
+		IF rtStart.Q THEN
+			mReset	:= FALSE;
+			nState	:= 10;
+		END_IF
+	10:
+		Reset(Axis := GVL.Master, Execute := Execute);
+		IF Reset.Done THEN
+			Reset(Axis := GVL.Master, Execute := FALSE);
+			nState	:= 15;
+		END_IF
+	15:
+		Reset(Axis := GVL.Slave_1, Execute := Execute);
+		IF Reset.Done THEN
+			Reset(Axis := GVL.Slave_1, Execute := FALSE);
+			nState	:= 20;
+		END_IF
+	20:
+		Reset(Axis := GVL.Slave_2, Execute := Execute);
+		IF Reset.Done THEN
+			Reset(Axis := GVL.Slave_2, Execute := FALSE);
+			nState	:= 25;
+		END_IF
+	25:
+		Reset(Axis := GVL.Slave_3, Execute := Execute);
+		IF Reset.Done THEN
+			Reset(Axis := GVL.Slave_3, Execute := FALSE);
+			nState	:= 30;
+		END_IF
+	30:
+		Reset(Axis := GVL.Slave_4, Execute := Execute);
+		IF Reset.Done THEN
+			Reset(Axis := GVL.Slave_4, Execute := FALSE);
+			nState	:= 35;
+		END_IF
+	35:
+		mReset		:= TRUE;
+		nState		:= 0;
+END_CASE
+
+
+//ResetMaster(Axis := Master, Execute := Execute);
+//ResetSlave_1(Axis := Slave_1, Execute := Execute);
+//ResetSlave_2(Axis := Slave_2, Execute := Execute);
+//ResetSlave_3(Axis := Slave_3, Execute := Execute);
+//ResetSlave_4(Axis := Slave_4, Execute := Execute);
+
+//IF ResetMaster.Done AND ResetSlave_1.Done AND ResetSlave_2.Done AND ResetSlave_3.Done AND ResetSlave_4.Done THEN
+//	Execute	:= FALSE;
+//END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="mRun" Id="{f142f0e0-c512-4da0-9a9a-fab148c051f5}">
+      <Declaration><![CDATA[METHOD mRun : BOOL
+VAR_INPUT
+END_VAR
+VAR_IN_OUT
+	bMasterRun		: BOOL;
+END_VAR
+VAR_INST
+	nState			: INT;
+	rtRerun			: R_TRIG;
+	
+	MoveMaster 		: MC_MoveVelocity;
+	
+	MoveSlave_1		: MC_MoveAbsolute;
+	MoveSlave_2		: MC_MoveAbsolute;
+	MoveSlave_3		: MC_MoveAbsolute;
+	MoveSlave_4		: MC_MoveAbsolute;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF bMasterRun THEN
+	MoveMaster(
+		Axis		:= GVL.Master,
+		Execute		:= TRUE,
+		Velocity	:= GVL.rMasterVel,
+		Direction	:= MC_Positive_Direction);
+	IF MoveMaster.InVelocity THEN
+		MoveMaster(Axis := GVL.Master, Execute := FALSE);
+		bMasterRun	:= FALSE;
+	END_IF
+END_IF
+
+MoveSlave_1(
+	Axis		:= GVL.Slave_1,
+	Execute		:= bRunCams,
+	Position	:= 0,
+	Velocity	:= 1000);
+MoveSlave_2(
+	Axis		:= GVL.Slave_2,
+	Execute		:= bRunCams,
+	Position	:= 0,
+	Velocity	:= 1000);
+MoveSlave_3(
+	Axis		:= GVL.Slave_3,
+	Execute		:= bRunCams,
+	Position	:= 0,
+	Velocity	:= 1000);
+MoveSlave_4(
+	Axis		:= GVL.Slave_4,
+	Execute		:= bRunCams,
+	Position	:= 0,
+	Velocity	:= 1000);]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="pCamInDone" Id="{725efcde-17db-48a1-9037-d6cb9b573392}">
+      <Declaration><![CDATA[PROPERTY pCamInDone : BOOL]]></Declaration>
+      <Get Name="Get" Id="{648050a1-777f-4a77-bc0e-4ca49d004044}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[pCamInDone := bCamInDone;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="pInitialized" Id="{b7815016-286e-4928-ae20-4eea446711b1}">
+      <Declaration><![CDATA[PROPERTY pInitialized : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6238a259-6a2d-4043-bf00-fd4abc03693d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[pInitialized := bInitialized;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="pRunCams" Id="{3eb23a41-149a-4da0-b761-d62043bf919b}">
+      <Declaration><![CDATA[PROPERTY pRunCams : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2130c9d1-da89-4479-9d0d-be8f500b0a03}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[pRunCams := bRunCams;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{ce7f989a-80be-4e25-8f47-44b00e4ea335}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[bRunCams := pRunCams;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="FB_MasterCamControl">
+      <LineId Id="90" Count="5" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="64" Count="3" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="68" Count="1" />
+      <LineId Id="63" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mCamOut">
+      <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="20" Count="2" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="27" Count="4" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="33" Count="4" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="39" Count="4" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="44" Count="2" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mHalt">
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="3" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mHomeAxes">
+      <LineId Id="85" Count="59" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mInitialize">
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="145" Count="2" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="156" Count="2" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="159" Count="2" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="150" Count="2" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="76" Count="2" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mMultiCamIn">
+      <LineId Id="5" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="24" Count="3" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="30" Count="2" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="42" Count="3" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="47" Count="3" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="52" Count="3" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="57" Count="3" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="62" Count="3" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="67" Count="3" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mPower">
+      <LineId Id="6" Count="50" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="70" Count="2" />
+      <LineId Id="57" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mReset">
+      <LineId Id="49" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="54" Count="2" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="59" Count="2" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="62" Count="1" />
+      <LineId Id="65" Count="2" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="70" Count="2" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="75" Count="2" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="80" Count="2" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="84" Count="2" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="32" Count="3" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.mRun">
+      <LineId Id="86" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="99" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="40" Count="3" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="47" Count="3" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="52" Count="3" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="57" Count="3" />
+      <LineId Id="56" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.pCamInDone.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.pInitialized.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.pRunCams.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MasterCamControl.pRunCams.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

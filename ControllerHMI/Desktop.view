@@ -1,0 +1,254 @@
+<div id="Desktop" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width-mode="Content" data-tchmi-min-width="100" data-tchmi-min-width-unit="%" data-tchmi-height-mode="Content" data-tchmi-min-height="100" data-tchmi-min-height-unit="%">
+<div id="Recipe_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="50" data-tchmi-height-unit="px" data-tchmi-left="221" data-tchmi-left-unit="px" data-tchmi-text="Activate 001" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">[
+  {
+    "event": "%ctx%owner::Id|EventRegistrationMode=Resolve%/ctx%.onPressed",
+    "actions": [
+      {
+        "objectType": "Function",
+        "active": true,
+        "fn": "TcHmi.Functions.Beckhoff.ActivateRecipe",
+        "fnParams": [
+          {
+            "objectType": "StaticValue",
+            "valueType": "tchmi:framework#/definitions/RecipeReference",
+            "value": "001"
+          }
+        ],
+        "asyncWait": true
+      }
+    ]
+  }
+]</script>
+</div>
+<div id="Recipe_2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="50" data-tchmi-height-unit="px" data-tchmi-left="331" data-tchmi-left-unit="px" data-tchmi-text="Activate 002" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">[
+  {
+    "event": "%ctx%owner::Id|EventRegistrationMode=Resolve%/ctx%.onPressed",
+    "actions": [
+      {
+        "objectType": "Function",
+        "active": true,
+        "fn": "TcHmi.Functions.Beckhoff.ActivateRecipe",
+        "fnParams": [
+          {
+            "objectType": "StaticValue",
+            "valueType": "tchmi:framework#/definitions/RecipeReference",
+            "value": "002"
+          }
+        ],
+        "asyncWait": true
+      }
+    ]
+  }
+]</script>
+</div>
+<div id="Assign" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="50" data-tchmi-height-unit="px" data-tchmi-left="516" data-tchmi-left-unit="px" data-tchmi-text="Assign to Worker" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">[
+  {
+    "event": "%ctx%owner::Id|EventRegistrationMode=Resolve%/ctx%.onPressed",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%Worker_1.MAIN.stThis.bGetRecipeAndCams%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:general#/definitions/BOOL",
+          "value": true
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]</script>
+</div>
+<div id="Name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Machine Name: " data-tchmi-top="124" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="Version" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Program Version:" data-tchmi-top="160" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="Recipe" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Active Recipe:" data-tchmi-top="196" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="Status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Status:" data-tchmi-top="232" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="JobsDone" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Number of jobs done:" data-tchmi-top="268" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="Days" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Days since last serviced:" data-tchmi-top="304" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-horizontal-alignment="Left">
+</div>
+<div id="name" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="124" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="version" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="160" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="recipe" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="196" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="status" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="232" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="jobs" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="268" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="days" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="204" data-tchmi-left-unit="px" data-tchmi-text="" data-tchmi-top="304" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center">
+</div>
+<div id="TcHmiButton" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="50" data-tchmi-height-unit="px" data-tchmi-left="355" data-tchmi-left-unit="px" data-tchmi-text="Show Info" data-tchmi-top="124" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">[
+  {
+    "event": "%ctx%owner::Id|EventRegistrationMode=Resolve%/ctx%.onPressed",
+    "actions": [
+      {
+        "objectType": "SwitchCase",
+        "active": true,
+        "compare": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:server#/definitions/Worker_1.Implicit_Enum__ST_WORKER_VARIABLES__eStatus",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.eStatus%/s%"
+        },
+        "cases": [
+          {
+            "caseValue": {
+              "objectType": "StaticValue",
+              "valueType": "tchmi:server#/definitions/Worker_1.Implicit_Enum__ST_WORKER_VARIABLES__eStatus",
+              "value": 0
+            },
+            "actions": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%ctrl%status::Text%/ctrl%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "value": "IDLE"
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "caseValue": {
+              "objectType": "StaticValue",
+              "valueType": "tchmi:server#/definitions/Worker_1.Implicit_Enum__ST_WORKER_VARIABLES__eStatus",
+              "value": 1
+            },
+            "actions": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%ctrl%status::Text%/ctrl%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "value": "READY"
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "caseValue": {
+              "objectType": "StaticValue",
+              "valueType": "tchmi:server#/definitions/Worker_1.Implicit_Enum__ST_WORKER_VARIABLES__eStatus",
+              "value": 2
+            },
+            "actions": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%ctrl%status::Text%/ctrl%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "value": "RUNNING"
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "caseValue": {
+              "objectType": "StaticValue",
+              "valueType": "tchmi:server#/definitions/Worker_1.Implicit_Enum__ST_WORKER_VARIABLES__eStatus",
+              "value": 3
+            },
+            "actions": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%ctrl%status::Text%/ctrl%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "value": "NEED MAINTAINANCE"
+                },
+                "asyncWait": true
+              }
+            ]
+          }
+        ],
+        "asyncWait": true
+      },
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%ctrl%name::Text%/ctrl%",
+        "value": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:general#/definitions/String",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.sMachineName%/s%"
+        },
+        "asyncWait": true
+      },
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%ctrl%recipe::Text%/ctrl%",
+        "value": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:general#/definitions/String",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.stRecipeVariables.sRecipeName%/s%"
+        },
+        "asyncWait": true
+      },
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%ctrl%days::Text%/ctrl%",
+        "value": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:general#/definitions/String",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.udnDaysSinceServiced%/s%"
+        },
+        "asyncWait": true
+      },
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%ctrl%jobs::Text%/ctrl%",
+        "value": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:general#/definitions/String",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.udnNumberOfJobsDone%/s%"
+        },
+        "asyncWait": true
+      },
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%ctrl%version::Text%/ctrl%",
+        "value": {
+          "objectType": "Symbol",
+          "valueType": "tchmi:general#/definitions/String",
+          "symbolExpression": "%s%Worker_1.MAIN.stThis.sProgramVersion%/s%"
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]</script>
+</div>
+<div id="LoadCAM" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="50" data-tchmi-height-unit="px" data-tchmi-left="44" data-tchmi-left-unit="px" data-tchmi-text="Load CAMs" data-tchmi-top="357" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+
+</div>
+</div>

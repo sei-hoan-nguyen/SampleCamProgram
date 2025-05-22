@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
+	<LicenseInfo>
+		<SystemId>{6814FF68-E049-7964-9490-32A4CB8F01DC}</SystemId>
+		<IssueTime>2025-05-21T20:04:00</IssueTime>
+		<ExpireTime>2025-05-29T00:00:00</ExpireTime>
+		<LicenseKey>cff03a917b14e25663731b122f288f3b3293bb639ddebbff4115044d1f1afd71d4e229985b4e57ad8d6cdb429d3210f13f68bb0e53d644a3c7ee01a10e1df6c575c64dc4b7f7c23d3f11afd906634c7c71b0b0845eb19c4ad00294597ba7a4ccd5d86a7fc1fe2ce49adce87c63d3a1aa36ec94e984f21922a75d4a4604ff4997bd8952addce2c79cdc5be13269aa7ccc21bcb63bee6330991e94640e26f5b6915173e6185016d29e678a3371c691d46416c06b20781a703e120f6209fe14d813071b9d63e30064b68e2a0d0043b35a315d063430128a446d9951ea406cc66173f08f366ad47aa4d04f5ba1d56897c35b9dcfa0f960d24f0da9b19a1fafde0f86</LicenseKey>
+		<License>
+			<LicenseId>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</LicenseId>
+			<Name>TC3 ADS</Name>
+			<OrderNo>TC1000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
+			<Name>TC3 IO</Name>
+			<OrderNo>TC1100</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
+			<Name>TC3 PLC</Name>
+			<OrderNo>TC1200</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{A19036CF-A53B-4E3A-99FF-023EF5C4798B}</LicenseId>
+			<Name>TC3 NC PTP Axis</Name>
+			<Instances>10</Instances>
+		</License>
+		<License>
+			<LicenseId>{520DE751-9DB6-47CB-8240-BD5C466E7E64}</LicenseId>
+			<Name>TC3 NC PTP</Name>
+			<OrderNo>TF5000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{6C4B2C28-7A9E-41AD-B5FE-6D61422A73D6}</LicenseId>
+			<Name>TC3 NC Camming</Name>
+			<OrderNo>TF5050</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{4989A799-AEEA-4FEE-88EF-666B99EEFB45}</LicenseId>
+			<Name>TC3 Scope View Professional</Name>
+			<OrderNo>TE1300</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{4156C772-5DC6-40A9-B3F8-C3D5A097513C}</LicenseId>
+			<Name>TC3 Cam-Design-Tool</Name>
+			<OrderNo>TE1510</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{37E5160D-987B-4640-888D-0F97727B53E2}</LicenseId>
+			<Name>TC3 HMI Clients</Name>
+			<Instances>1</Instances>
+		</License>
+		<License>
+			<LicenseId>{A2091C4C-7D04-4202-B173-9984E7125BC0}</LicenseId>
+			<Name>TC3 HMI Targets</Name>
+			<Instances>1</Instances>
+		</License>
+		<License>
+			<LicenseId>{CCE50C10-2CAA-4243-8182-080F02C5BE3D}</LicenseId>
+			<Name>TC3 Reporting Server</Name>
+		</License>
+		<License>
+			<LicenseId>{796D380F-D49E-4C0C-A05F-500052FAC883}</LicenseId>
+			<Name>TC3 HMI Server</Name>
+			<OrderNo>TF2000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{CC0BCBD5-3EA7-D7D4-4C71-A8B125F0DB72}</LicenseId>
+			<Name>TC3 OPC-UA Analytics Read</Name>
+		</License>
+		<License>
+			<LicenseId>{C2B7B285-EBD7-72CF-843F-15F95A86FEEE}</LicenseId>
+			<Name>TC3 OPC-UA Analytics Write</Name>
+		</License>
+		<License>
+			<LicenseId>{BDCC0070-42D5-49AE-ABF1-1D4434813D60}</LicenseId>
+			<Name>TC3 OPC-UA</Name>
+			<OrderNo>TF6100</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3DDCAB25-BF0E-412C-A721-DC77C1B8099C}</LicenseId>
+			<Name>TC3 Scope Server</Name>
+			<OrderNo>TF3300</OrderNo>
+		</License>
+	</LicenseInfo>
+</TcLicenseInfo>

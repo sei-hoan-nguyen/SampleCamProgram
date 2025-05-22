@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="MAIN" Id="{8749f6d4-9eb1-4455-8c08-9154e8b5dfe0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	stWorker_1		: ST_WORKER_VARIABLES;
+	stRecipe		: ST_RECIPE_VARIABLES;
+	
+	// Slave positions for the cam table
+	// Array [1..4] are slaves 1 - 4, each of the slave is a 2d array **REQUIRED by cam table ref**
+	// Array [0..359] are master-slave position pair
+	ALL_CAM			: ARRAY [1..4] OF ARRAY [0..359] OF ARRAY [0..1] OF LREAL;		
+	ALL_CAM_REF		: ARRAY [1..4] OF MC_CAM_REF;		// Cam table reference
+	
+	nState			: INT;
+	bStart			: BOOL;
+	
+	fbMasterCam		: FB_MasterCamControl;
+	fbCamProfiles	: FB_CamProfiles;
+	mcHome			: MC_Home;
+	bMasterRun		: BOOL;
+	bHalt			: BOOL;
+	bReset			: BOOL;
+	bReadDone		: BOOL;
+	bCreateDone		: BOOL;
+	
+	bCamIn			: BOOL;
+	nUpdate			: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbMasterCam();
+
+CASE nState OF
+	0:	// IDLE
+		IF bStart THEN
+			nState		:= 5;
+		END_IF
+	5:	// Initialize and enable the power on Master and Slaves Axes
+		fbMasterCam.mInitialize(TRUE);
+		IF fbMasterCam.pInitialized THEN
+			fbMasterCam.mInitialize(FALSE);
+			nState		:= 10;
+		END_IF
+	(**************** These will not be implemented in the real project ***********)
+	(**************** recipe management will replace the csv file *****************)
+	10:	// Read CAM profiles from CSV files and store in CAM arrays
+		fbCamProfiles.mReadAndStoreSlavePositions(TRUE, ALL_CAM);
+		IF fbCamProfiles.pReadDone THEN
+			fbCamProfiles.mReadAndStoreSlavePositions(FALSE, ALL_CAM);
+			nState		:= 15;
+		END_IF
+	15:	// Create Twincat digital CAM tables from CAM profile arrays
+		fbCamProfiles.mCreateCamProfiles(TRUE, ALL_CAM, ALL_CAM_REF);
+		IF fbCamProfiles.pCreateDone THEN
+			fbCamProfiles.mCreateCamProfiles(FALSE, ALL_CAM, ALL_CAM_REF);
+			GVL.rMasterVel:= 0.5;			// Start Master at minimum speed
+			bMasterRun	:= TRUE;			// to couple CAM profiles
+			fbMasterCam.pRunCams:= TRUE;	// Start Slaves
+			nState		:= 20;
+		END_IF
+	(**************      ~30s to complete the csv reading     *********************)
+	(******************************************************************************)
+	20:	// Assign CAM tables to their respective Slave Axes
+		fbMasterCam.mMultiCamIn(TRUE);
+		IF fbMasterCam.pCamInDone THEN
+			fbMasterCam.mMultiCamIn(TRUE);
+			nState		:= 25;
+		END_IF
+	25:	// Speed up Master after all CAMs done coupling 
+		IF NOT bMasterRun THEN
+			GVL.rMasterVel	:= 180;
+			bMasterRun		:= TRUE;
+			nState			:= 26;
+		END_IF
+		
+	(********************* Not used *******************)
+	30:	// Stop all axes
+		fbMasterCam.mHalt(bHalt);
+	35: // Reset all axes
+		fbMasterCam.mReset(bReset);
+END_CASE
+fbMasterCam.mRun(bMasterRun);]]></ST>
+    </Implementation>
+    <Method Name="mLoadCSVToCAMs" Id="{13be9ac3-c672-48b1-bbdd-4ac4fa071a5b}">
+      <Declaration><![CDATA[METHOD mLoadCSVToCAMs : BOOL
+//VAR_INPUT
+//	Execute		: BOOL;
+//END_VAR
+//VAR_IN_OUT
+//	Slave_CAM	: ARRAY [0..360] OF ARRAY [0..1] OF LREAL;
+//END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//CASE nState OF
+//	0:
+//		IF Execute THEN
+//			sReadLine	:= '';
+//			nStringIndex:= 0;
+//			nState		:= 1;
+//		END_IF
+//	1:
+//		fbFileOpen(
+//			sNetId		:= '10.75.0.183.1.1',
+//			sPathName	:= sFilePath,
+//			nMode		:= FOPEN_MODEREAD,
+//			ePath		:= PATH_GENERIC,
+//			bExecute	:= TRUE,
+//			tTimeout	:= DEFAULT_ADS_TIMEOUT);
+//		nState			:= 2;
+//	2:
+//		fbFileOpen(	
+//			bExecute 	:= FALSE,
+//			hFile 		=> fileHandle);
+//		IF NOT fbFileOpen.bBusy THEN
+//			IF NOT fbFileOpen.bError THEN
+//				nState	:= 5;
+//			ELSE
+//				nState	:= 255;
+//			END_IF
+//		END_IF
+//	5:
+//		fbFileGets(
+//			sNetId		:= '10.75.0.183.1.1',
+//			hFile		:= fileHandle,
+//			bExecute	:= TRUE,
+//			sLine		=> sReadLine);
+//		IF NOT fbFileGets.bBusy AND NOT fbFileGets.bError THEN
+//			fbFileGets(bExecute:=FALSE);
+//			IF NOT fbFileGets.bEOF THEN
+//				nState	:= 10;
+//			ELSE
+//				nStringIndex:= 0;
+//				nState	:= 15;
+//			END_IF
+//		ELSIF fbFileGets.bError THEN
+//				nState	:= 255;
+//		END_IF
+//	10:
+//		arrString[nStringIndex]:= sReadLine;
+//		nStringIndex	:= nStringIndex + 1;
+//		nState			:= 5;
+//	15:
+//		FOR nStringIndex := 0 TO 360 DO
+//			rAbsPosition:= STRING_TO_REAL(arrString[nStringIndex]);
+//			arrTemp[0]	:= nStringIndex;
+//			arrTemp[1]	:= rAbsPosition;
+//			Slave_CAM[nStringIndex]:= arrTemp;
+//		END_FOR
+//		nState			:= 60;
+		
+//	60:
+//		fbFileClose(
+//			sNetId		:= '10.75.0.183.1.1',
+//			hFile		:= fileHandle,
+//			bExecute	:= TRUE);
+//		nState			:= 61;
+//	61:
+//		fbFileClose(bExecute:=FALSE);
+//		IF NOT fbFileClose.bBusy THEN
+//			IF NOT fbFileClose.bError THEN
+//				nState	:= 62;
+//			ELSE
+//				nState	:= 255;
+//			END_IF
+//		END_IF
+//	62:
+//		sTemp			:= '';
+//		sFilePath		:= 'C:\';
+//		bExecute		:= FALSE;
+//		nState			:= 0;
+//END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="239" Count="0" />
+      <LineId Id="371" Count="0" />
+      <LineId Id="183" Count="1" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="188" Count="2" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="199" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="401" Count="0" />
+      <LineId Id="403" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="208" Count="2" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="215" Count="1" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="289" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="404" Count="0" />
+      <LineId Id="402" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="312" Count="3" />
+      <LineId Id="222" Count="0" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="345" Count="0" />
+      <LineId Id="336" Count="0" />
+      <LineId Id="341" Count="1" />
+      <LineId Id="346" Count="0" />
+      <LineId Id="396" Count="1" />
+      <LineId Id="227" Count="1" />
+      <LineId Id="224" Count="0" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="76" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.mLoadCSVToCAMs">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="87" Count="5" />
+      <LineId Id="94" Count="2" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="74" Count="5" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="66" Count="2" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="102" Count="1" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="180" Count="0" />
+      <LineId Id="186" Count="1" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="189" Count="1" />
+      <LineId Id="175" Count="1" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="155" Count="1" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="158" Count="3" />
+      <LineId Id="164" Count="3" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="63" Count="1" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.14">
+  <DUT Name="ST_RECIPE_VARIABLES" Id="{78a67f72-36e6-4d1e-a155-4bbc3dfda38d}">
+    <Declaration><![CDATA[TYPE ST_RECIPE_VARIABLES :
+STRUCT
+	sRecipeName			: STRING;
+	MotionPoints_CAM_1	: ARRAY [0..360, 0..1] OF REAL;
+	MotionPoints_CAM_2	: ARRAY [0..360, 0..1] OF REAL;
+	MotionPoints_CAM_3	: ARRAY [0..360, 0..1] OF REAL;
+	MotionPoints_CAM_4	: ARRAY [0..360, 0..1] OF REAL;
+	// And other Recipe Variables
+	bCheckBool			: BOOL;
+	nTestInt			: INT;
+	rTestReal			: REAL;
+	lrTestLReal			: LREAL;
+	udnAnotherInt		: UDINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

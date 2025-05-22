@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <GVL Name="GVL" Id="{427462ac-7231-40c9-8fd2-076f2a986238}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	Master		: AXIS_REF;		// Master will be a virtual axis
+	rMasterVel	: REAL;
+	
+	// The 4 slaves will be the 4 Beckhoff motors
+	Slave_1		: AXIS_REF;
+	Slave_2		: AXIS_REF;
+	Slave_3		: AXIS_REF;
+	Slave_4		: AXIS_REF;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
