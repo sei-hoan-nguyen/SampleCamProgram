@@ -1,0 +1,62 @@
+{
+  "$schema": "../../TcHmiSrv/schema/ExtensionSettings.Schema.json",
+  "version": "14.2.102.0",
+  "configVersion": "1.0.1.1",
+  "guid": "3E6F3378-1995-4288-8957-93D328E781A6",
+  "visibility": "AlwaysShow",
+  "policies": [
+    "StrictPropertyValidation"
+  ],
+  "symbols": {
+    "ListSymbols": {
+      "readValue": {
+        "function": true
+      }
+    },
+    "GetSchema": {
+      "writeValue": {
+        "type": "string"
+      },
+      "readValue": {
+        "function": true
+      }
+    },
+    "Diagnostics": {
+      "userGroups": [
+        "__SystemUsers"
+      ],
+      "readValue": {
+        "function": true,
+        "type": "object",
+        "properties": {
+          "diag_namespaces": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "type": "string"
+                },
+                "list_symbols_state": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "available_ua_namespaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "packageVersion": "22.0.6418",
+  "productVersion": "14.2.102.0",
+  "signature": "YKriNESyhqsP9lMs0D5te77l22F1iTL0wDBY4miR7Zk9k0EESf6b0Wl07jcvmFo8Nnl83xPOdXVYvi88VJwyJjuF62kH8YMCh0/pL6/kg5mSgQp44PXeXxjLNgOJIfRiNEN+IfHXMqKPLX8j9wAX4oG5A6sy2YhQiGoZoKfjH7ZgB4zdrRuOgvWbv0Me6L32NdodZoYbigCZAKtfZZyu+ucne8T2nOaCpKZednEbIu6nyuGFMN5FHMvTAgnvMoYcxOpJUWVjbS/itbHf1leu/CGrQY2doRojL6xlwqFhVH/bnVZAXA+uvjnpz1yXS+3hfdjpw5r894mRMHWKtmeCkA=="
+}
